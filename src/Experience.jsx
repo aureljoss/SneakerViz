@@ -1,11 +1,8 @@
 import {
   OrbitControls,
   useGLTF,
-  useTexture,
-  CameraShake,
   Center,
   Html,
-  useEnvironment,
   Environment,
 } from "@react-three/drei";
 import { useState, useEffect, useRef } from "react";
@@ -45,7 +42,7 @@ export default function Experience(props) {
       normalMap={brlNormalMap}
       roughnessMap={brlRoughnessMap}
       roughness={0.9}
-      color={props.color}
+      color={"ffffff"}
       metalness={0}
     />
   );
@@ -139,7 +136,7 @@ export default function Experience(props) {
               normalMap={brlNormalMap}
               roughnessMap={brlRoughnessMap}
               roughness={0.9}
-              color={props.color}
+              color={props.mainColor}
               metalness={0}
             />
           </mesh>
@@ -150,7 +147,14 @@ export default function Experience(props) {
             position={[0, 0.844, -0.117]}
             scale={[1.802, 0.84, 0.642]}
           >
-            {leather}
+            <meshStandardMaterial
+              // map={brlColorMap}
+              normalMap={brlNormalMap}
+              roughnessMap={brlRoughnessMap}
+              roughness={0.9}
+              color={props.mainColor}
+              metalness={0}
+            />
           </mesh>
           <mesh
             castShadow
