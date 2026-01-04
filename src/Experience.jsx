@@ -42,7 +42,7 @@ export default function Experience(props) {
       normalMap={brlNormalMap}
       roughnessMap={brlRoughnessMap}
       roughness={0.9}
-      color={"ffffff"}
+      color={"#ffffff"}
       metalness={0}
     />
   );
@@ -101,7 +101,13 @@ export default function Experience(props) {
             position={[0, 0.844, -0.117]}
             scale={[1.802, 0.84, 0.642]}
           >
-            {leather}
+            <meshStandardMaterial
+              normalMap={brlNormalMap}
+              roughnessMap={brlRoughnessMap}
+              roughness={0.9}
+              color={props.backTabColor}
+              metalness={0}
+            />
           </mesh>
           <mesh
             castShadow
@@ -132,11 +138,10 @@ export default function Experience(props) {
             rotation={[0, -0.059, 0]}
           >
             <meshStandardMaterial
-              // map={brlColorMap}
               normalMap={brlNormalMap}
               roughnessMap={brlRoughnessMap}
               roughness={0.9}
-              color={props.mainColor}
+              color={props.swooshColor}
               metalness={0}
             />
           </mesh>
@@ -148,7 +153,6 @@ export default function Experience(props) {
             scale={[1.802, 0.84, 0.642]}
           >
             <meshStandardMaterial
-              // map={brlColorMap}
               normalMap={brlNormalMap}
               roughnessMap={brlRoughnessMap}
               roughness={0.9}
@@ -163,7 +167,13 @@ export default function Experience(props) {
             position={[0, 0.844, -0.117]}
             scale={[1.789, 0.834, 0.637]}
           >
-            {textile}
+            <meshStandardMaterial
+              color={props.interiorColor}
+              normalMap={TexNormalMap}
+              roughnessMap={TexRoughnessMap}
+              roughness={0.99}
+              metalness={0}
+            />
           </mesh>
           <mesh
             castShadow
@@ -172,7 +182,13 @@ export default function Experience(props) {
             position={[0, 0.844, -0.117]}
             scale={[1.802, 0.84, 0.642]}
           >
-            {leather}
+            <meshStandardMaterial
+              normalMap={brlNormalMap}
+              roughnessMap={brlRoughnessMap}
+              roughness={0.9}
+              color={props.tipEyestayTongueColor}
+              metalness={0}
+            />
           </mesh>
           <mesh
             castShadow
@@ -181,7 +197,13 @@ export default function Experience(props) {
             position={[0.408, 0.414, 0.004]}
             rotation={[0, 0, 0.459]}
           >
-            {textile}
+                        <meshStandardMaterial
+              normalMap={brlNormalMap}
+              roughnessMap={brlRoughnessMap}
+              roughness={0.9}
+              color={props.laceColor}
+              metalness={0}
+            />
           </mesh>
           <mesh
             castShadow

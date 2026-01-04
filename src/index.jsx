@@ -20,14 +20,52 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
 function App() {
-  const [mainColor, setColor] = useState("#8B4513");
-  console.log(mainColor);
+  const [mainColor, setColor] = useState("#d19c2a");
+  const [tipEyestayTongueColor, setTipEyestayTongueColor] = useState("#ece9e9");
+  const [interiorColor, setInteriorColor] = useState("#6881c5");
+  const [swooshColor, setSwooshColor] = useState("#6881c5");
+  // This will hold a logo choice identifier (e.g. 'logo-1', 'logo-2')
+  const [tongueLabelColor, setTongueLabelColor] = useState("logo-1");
+  const [laceColor, setLaceColor] = useState("#6881c5");
+  const [backTabColor, setBackTabColor] = useState("#6881c5");
+  // soleColor limited to 'white' or 'gum'
+  const [soleColor, setSoleColor] = useState("ece9e9");
+
+  const [builderIndex, setBuilderIndex] = useState(0);
+
+  const builders = [
+    { title: "Vamp / Quarter", value: mainColor, onChange: setColor },
+    {
+      title: "Tip / Eyestay / Tongue",
+      value: tipEyestayTongueColor,
+      onChange: setTipEyestayTongueColor,
+    },
+    {
+      title: "Foxing / Lining",
+      value: interiorColor,
+      onChange: setInteriorColor,
+    },
+    {
+      title: "Swoosh",
+      value: swooshColor,
+      onChange: setSwooshColor,
+    },
+    {
+      title: "Tongue Label",
+      value: tongueLabelColor,
+      onChange: setTongueLabelColor,
+    },
+    { title: "Laces", value: laceColor, onChange: setLaceColor },
+    { title: "Back Tab", value: backTabColor, onChange: setBackTabColor },
+    { title: "Sole", value: soleColor, onChange: setSoleColor },
+  ];
 
   return (
     <>
       <div id="canvas-container">
         <Canvas
           flat
+          shadows
           camera={{
             fov: 50,
             near: 0.01,
@@ -35,7 +73,16 @@ function App() {
           }}
         >
           <Suspense>
-            <Experience mainColor={mainColor} />
+            <Experience
+              mainColor={mainColor}
+              tipEyestayTongueColor={tipEyestayTongueColor}
+              interiorColor={interiorColor}
+              swooshColor={swooshColor}
+              tongueLabelColor={tongueLabelColor}
+              laceColor={laceColor}
+              backTabColor={backTabColor}
+              soleColor={soleColor}
+            />
             {/* UI */}
           </Suspense>
         </Canvas>
@@ -99,79 +146,33 @@ function App() {
               maxHeight: "80vh",
             }}
           >
-            <div class="builder-navigation">
-              <ArrowBackIosIcon onClick={() => {}} />
-              <ShoeBuilder title="Vamp / Quarter" />
-              <ArrowForwardIosIcon />
-            </div>
+            <div className="builder-navigation">
+              <ArrowBackIosIcon
+                onClick={() => setBuilderIndex((i) => Math.max(0, i - 1))}
+                style={{
+                  cursor: builderIndex === 0 ? "default" : "pointer",
+                  opacity: builderIndex === 0 ? 0.35 : 1,
+                }}
+              />
 
-            <div>
-              <Fab
-                size="small"
-                sx={{
-                  backgroundColor: "#000000",
-                  margin: "10px",
-                  transform: "scale(0.9)",
-                  border:
-                    mainColor === "#000000" ? "2px solid #353535ff" : null,
+              <ShoeBuilder
+                title={builders[builderIndex].title}
+                value={builders[builderIndex].value}
+                onChange={builders[builderIndex].onChange}
+              />
+
+              <ArrowForwardIosIcon
+                onClick={() =>
+                  setBuilderIndex((i) => Math.min(i + 1, builders.length - 1))
+                }
+                style={{
+                  cursor:
+                    builderIndex === builders.length - 1
+                      ? "default"
+                      : "pointer",
+                  opacity: builderIndex === builders.length - 1 ? 0.35 : 1,
                 }}
-                onClick={() => setColor("#000000")}
-              ></Fab>
-              <Fab
-                size="small"
-                sx={{
-                  backgroundColor: "#ffffff",
-                  margin: "10px",
-                  transform: "scale(0.9)",
-                  border:
-                    mainColor === "#ffffff" ? "2px solid #353535ff" : null,
-                }}
-                onClick={() => setColor("#ffffff")}
-              ></Fab>
-              <Fab
-                size="small"
-                sx={{
-                  backgroundColor: "#d19c2a",
-                  margin: "10px",
-                  transform: "scale(0.9)",
-                  border:
-                    mainColor === "#d19c2a" ? "2px solid #353535ff" : null,
-                }}
-                onClick={() => setColor("#daa431")}
-              ></Fab>
-              <Fab
-                size="small"
-                sx={{
-                  backgroundColor: "#cb8bdf",
-                  margin: "10px",
-                  transform: "scale(0.9)",
-                  border:
-                    mainColor === "#cb8bdf" ? "2px solid #353535ff" : null,
-                }}
-                onClick={() => setColor("#cb8bdf")}
-              ></Fab>
-              <Fab
-                size="small"
-                sx={{
-                  backgroundColor: "#647be0",
-                  margin: "10px",
-                  transform: "scale(0.9)",
-                  border:
-                    mainColor === "#647be0" ? "2px solid #353535ff" : null,
-                }}
-                onClick={() => setColor("#647be0")}
-              ></Fab>
-              <Fab
-                size="small"
-                sx={{
-                  backgroundColor: "#cc1d51",
-                  margin: "10px",
-                  transform: "scale(0.9)",
-                  border:
-                    mainColor === "#cc1d51ff" ? "2px solid #353535ff" : null,
-                }}
-                onClick={() => setColor("#cc1d51")}
-              ></Fab>
+              />
             </div>
           </Box>
         </Container>
