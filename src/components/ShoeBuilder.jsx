@@ -1,7 +1,7 @@
 export default function ShoeBuilder(props) {
   return (
     <>
-      <h2>{props.title}</h2>
+      <h1>{props.title}</h1>
     </>
   );
 }
