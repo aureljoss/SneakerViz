@@ -20,7 +20,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
 function App() {
-  const [mainColor, setColor] = useState("#d19c2a");
+  const [mainColor, setMainColor] = useState("#ece9e9");
   const [tipEyestayTongueColor, setTipEyestayTongueColor] = useState("#ece9e9");
   const [interiorColor, setInteriorColor] = useState("#6881c5");
   const [swooshColor, setSwooshColor] = useState("#6881c5");
@@ -29,12 +29,16 @@ function App() {
   const [laceColor, setLaceColor] = useState("#6881c5");
   const [backTabColor, setBackTabColor] = useState("#6881c5");
   // soleColor limited to 'white' or 'gum'
-  const [soleColor, setSoleColor] = useState("ece9e9");
+  const [soleColor, setSoleColor] = useState("#ece9e9");
 
   const [builderIndex, setBuilderIndex] = useState(0);
 
+  const handleMeshClick = (index) => {
+    setBuilderIndex(index);
+  };
+
   const builders = [
-    { title: "Vamp / Quarter", value: mainColor, onChange: setColor },
+    { title: "Vamp / Quarter", value: mainColor, onChange: setMainColor },
     {
       title: "Tip / Eyestay / Tongue",
       value: tipEyestayTongueColor,
@@ -67,9 +71,9 @@ function App() {
           flat
           shadows
           camera={{
-            fov: 50,
+            fov: 26,
             near: 0.01,
-            position: [-6, 8, 15],
+            position: [-5, 3, -10],
           }}
         >
           <Suspense>
@@ -82,6 +86,7 @@ function App() {
               laceColor={laceColor}
               backTabColor={backTabColor}
               soleColor={soleColor}
+              onMeshClick={handleMeshClick}
             />
             {/* UI */}
           </Suspense>
