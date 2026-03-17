@@ -20,7 +20,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
 function App() {
-  const [mainColor, setMainColor] = useState("#ece9e9");
+  const [mainColor, setMainColor] = useState("#ffffff");
   const [tipEyestayTongueColor, setTipEyestayTongueColor] = useState("#ece9e9");
   const [interiorColor, setInteriorColor] = useState("#6881c5");
   const [swooshColor, setSwooshColor] = useState("#6881c5");
@@ -63,6 +63,8 @@ function App() {
     { title: "Back Tab", value: backTabColor, onChange: setBackTabColor },
     { title: "Sole", value: soleColor, onChange: setSoleColor },
   ];
+
+  console.log(builders[builderIndex]);
 
   return (
     <>
