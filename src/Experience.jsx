@@ -7,7 +7,7 @@ import {
   Plane,
 } from "@react-three/drei";
 import { useState, useEffect, useRef } from "react";
-import { DoubleSide } from "three";
+import { DoubleSide, Color } from "three";
 import { useThree, useFrame, useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
 
@@ -27,7 +27,7 @@ export default function Experience(props) {
     NikeTongueTab: 4,
     AirTongueTab: 4,
     NikeBackTab001: 4,
-    BackVertical003: 6,
+    BackVertical003: 2,
     Foxing001: 2, // Foxing / Lining
     Cushion001_swoosh: 2, // Swoosh
     Cushion001_interior: 2, // Foxing / Lining
@@ -51,6 +51,83 @@ export default function Experience(props) {
     ThreadsTipRight008: 5,
     SoleAirLine001: 7,
     Air001: 7,
+  };
+
+  const setCursor = (cursor) => {
+    if (typeof document !== "undefined") {
+      document.body.style.cursor = cursor;
+    }
+  };
+
+  const hoveredRef = useRef(null);
+
+  const getMaterialObject = (object) => {
+    while (object && !object.material) {
+      object = object.parent;
+    }
+    return object;
+  };
+
+  const highlightMesh = (object) => {
+    if (!object?.material) return;
+    const setHighlight = (material) => {
+      if (!material.userData) material.userData = {};
+      if (!material.userData.original) {
+        material.userData.original = {
+          emissive: material.emissive ? material.emissive.clone() : new Color(0x000000),
+          emissiveIntensity: material.emissiveIntensity ?? 1,
+        };
+      }
+      material.emissive = new Color(0xffffff);
+      material.emissiveIntensity = 0.15;
+    };
+
+    if (Array.isArray(object.material)) {
+      object.material.forEach(setHighlight);
+    } else {
+      setHighlight(object.material);
+    }
+  };
+
+  const unhighlightMesh = (object) => {
+    if (!object?.material) return;
+    const restore = (material) => {
+      const original = material.userData?.original;
+      if (!original) return;
+      material.emissive = original.emissive.clone();
+      material.emissiveIntensity = original.emissiveIntensity;
+    };
+
+    if (Array.isArray(object.material)) {
+      object.material.forEach(restore);
+    } else {
+      restore(object.material);
+    }
+  };
+
+  const handlePointerOver = (event) => {
+    event.stopPropagation();
+    const mesh = getMaterialObject(event.object);
+    if (!mesh) return;
+
+    setCursor("pointer");
+    if (hoveredRef.current && hoveredRef.current !== mesh) {
+      unhighlightMesh(hoveredRef.current);
+    }
+    highlightMesh(mesh);
+    hoveredRef.current = mesh;
+  };
+
+  const handlePointerOut = (event) => {
+    event.stopPropagation();
+    const mesh = getMaterialObject(event.object);
+    if (!mesh) return;
+
+    if (hoveredRef.current === mesh) {
+      unhighlightMesh(mesh);
+      hoveredRef.current = null;
+    }
+    setCursor("auto");
   };
 
   // Materials
@@ -90,7 +167,13 @@ export default function Experience(props) {
   );
 
   const renderShoe = (position, scale) => (
-    <group rotation={[0, 0, Math.PI / 14]} position={position} scale={scale}>
+    <group
+      rotation={[0, 0, Math.PI / 14]}
+      position={position}
+      scale={scale}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
       <mesh
         castShadow
         receiveShadow
@@ -149,25 +232,6 @@ export default function Experience(props) {
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Cushion001.geometry}
-        name="Cushion001_swoosh"
-        onClick={(event) => {
-          event.stopPropagation();
-          props.onMeshClick(meshToIndex[event.object.name]);
-        }}
-      >
-        <meshStandardMaterial
-          normalMap={brlNormalMap}
-          roughnessMap={brlRoughnessMap}
-          roughness={1}
-          color={props.swooshColor}
-          metalness={0}
-        />
-      </mesh>
-
-      <mesh
-        castShadow
-        receiveShadow
         geometry={nodes.BackTab001.geometry}
         name="BackTab001"
         onClick={(event) => {
@@ -198,7 +262,7 @@ export default function Experience(props) {
           normalMap={brlNormalMap}
           roughnessMap={brlRoughnessMap}
           roughness={1}
-          color={props.tipEyestayTongueColor}
+          color={props.interiorColor}
           metalness={0}
         />
       </mesh>
@@ -213,7 +277,13 @@ export default function Experience(props) {
           props.onMeshClick(meshToIndex[event.object.name]);
         }}
       >
-        {leather}
+        <meshStandardMaterial
+          normalMap={brlNormalMap}
+          roughnessMap={brlRoughnessMap}
+          roughness={1}
+          color={props.interiorColor}
+          metalness={0}
+        />
       </mesh>
 
       <mesh
@@ -226,7 +296,13 @@ export default function Experience(props) {
           props.onMeshClick(meshToIndex[event.object.name]);
         }}
       >
-        {leather}
+        <meshStandardMaterial
+          normalMap={brlNormalMap}
+          roughnessMap={brlRoughnessMap}
+          roughness={1}
+          color={props.tipEyestayTongueColor}
+          metalness={0}
+        />
       </mesh>
 
       <mesh
@@ -314,7 +390,6 @@ export default function Experience(props) {
           event.stopPropagation();
           props.onMeshClick(meshToIndex[event.object.name]);
         }}
-        onPointerDown={console.log}
       >
         <meshStandardMaterial
           normalMap={brlNormalMap}
@@ -414,7 +489,7 @@ export default function Experience(props) {
           metalness={0}
         />
       </mesh>
-            <mesh
+      <mesh
         castShadow
         receiveShadow
         geometry={nodes.AirBackTab001.geometry}
@@ -468,7 +543,7 @@ export default function Experience(props) {
           metalness={0}
         />
       </mesh>
-            <mesh
+      <mesh
         castShadow
         receiveShadow
         geometry={nodes.Tongue001.geometry}
@@ -759,7 +834,7 @@ export default function Experience(props) {
         maxPolarAngle={Math.PI}
       />
       {/* Lights */}
-      <ambientLight intensity={1} castShadow />
+      <ambientLight intensity={1} />
       <directionalLight
         position={[2, 5, 0.5]}
         intensity={1}
@@ -786,7 +861,7 @@ export default function Experience(props) {
             color="hsla(0, 0%, 51%, 1)"
           />
         </Plane>
-        {renderShoe([0, 0.2, 0])}
+        {renderShoe([0, 0.2, 0], [1,1,1])}
         {renderShoe([0, 0.2, 1.8], [1, 1, -1])}
 
         {/* <Environment preset="studio" /> */}

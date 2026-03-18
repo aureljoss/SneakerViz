@@ -1,71 +1,33 @@
 import React from "react";
 import Fab from "@mui/material/Fab";
 
-export default function ShoeBuilder({ title, value, onChange }) {
+const DEFAULT_COLORS = [
+  "#292929",
+  "#ece9e9",
+  "#a05f21",
+  "#cb8bdf",
+  "#6881c5",
+  "#cc1d51",
+];
+
+export default function ShoeBuilder({ title, value, onChange, colors = DEFAULT_COLORS }) {
   return (
     <div id="builder-container">
       <h1>{title}</h1>
       <div>
-        <Fab
-          size="small"
-          sx={{
-            backgroundColor: "#000000",
-            margin: "10px",
-            transform: "scale(0.9)",
-            border: value === "#000000" ? "2px solid #353535" : null,
-          }}
-          onClick={() => onChange("#000000")}
-        ></Fab>
-        <Fab
-          size="small"
-          sx={{
-            backgroundColor: "#ece9e9",
-            margin: "10px",
-            transform: "scale(0.9)",
-            border: value === "#ece9e9" ? "2px solid #353535" : null,
-          }}
-          onClick={() => onChange("#ece9e9")}
-        ></Fab>
-        <Fab
-          size="small"
-          sx={{
-            backgroundColor: "#d19c2a",
-            margin: "10px",
-            transform: "scale(0.9)",
-            border: value === "#d19c2a" ? "2px solid #353535" : null,
-          }}
-          onClick={() => onChange("#d19c2a")}
-        ></Fab>
-        <Fab
-          size="small"
-          sx={{
-            backgroundColor: "#cb8bdf",
-            margin: "10px",
-            transform: "scale(0.9)",
-            border: value === "#cb8bdf" ? "2px solid #353535" : null,
-          }}
-          onClick={() => onChange("#cb8bdf")}
-        ></Fab>
-        <Fab
-          size="small"
-          sx={{
-            backgroundColor: "#6881c5",
-            margin: "10px",
-            transform: "scale(0.9)",
-            border: value === "#6881c5" ? "2px solid #353535" : null,
-          }}
-          onClick={() => onChange("#6881c5")}
-        ></Fab>
-        <Fab
-          size="small"
-          sx={{
-            backgroundColor: "#cc1d51",
-            margin: "10px",
-            transform: "scale(0.9)",
-            border: value === "#cc1d51" ? "2px solid #353535" : null,
-          }}
-          onClick={() => onChange("#cc1d51")}
-        ></Fab>
+        {colors.map((color) => (
+          <Fab
+            key={color}
+            size="small"
+            sx={{
+              backgroundColor: color,
+              margin: "10px",
+              transform: "scale(0.9)",
+              border: value === color ? "2px solid #353535" : null,
+            }}
+            onClick={() => onChange(color)}
+          ></Fab>
+        ))}
       </div>
     </div>
   );

@@ -61,7 +61,12 @@ function App() {
     },
     { title: "Laces", value: laceColor, onChange: setLaceColor },
     { title: "Back Tab", value: backTabColor, onChange: setBackTabColor },
-    { title: "Sole", value: soleColor, onChange: setSoleColor },
+    {
+      title: "Sole",
+      value: soleColor,
+      onChange: setSoleColor,
+      colors: ["#ece9e9", "#a05f21"],
+    },
   ];
 
   console.log(builders[builderIndex]);
