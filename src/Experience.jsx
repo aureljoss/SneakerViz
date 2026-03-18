@@ -2,20 +2,18 @@ import {
   OrbitControls,
   useGLTF,
   Center,
-  Html,
   Environment,
   Plane,
 } from "@react-three/drei";
 import { useState, useEffect, useRef } from "react";
 import { DoubleSide, Color } from "three";
-import { useThree, useFrame, useLoader } from "@react-three/fiber";
+import { useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
 
 //Imported glb models
-const sneakerModel = "/models/sneaker.glb";
 
 export default function Experience(props) {
-  const { nodes, materials } = useGLTF("/models/sneaker.glb");
+  const { nodes } = useGLTF("/models/sneaker.glb");
 
   const meshToIndex = {
     MainBody001: 0, // Vamp / Quarter
@@ -74,12 +72,12 @@ export default function Experience(props) {
       if (!material.userData) material.userData = {};
       if (!material.userData.original) {
         material.userData.original = {
-          emissive: material.emissive ? material.emissive.clone() : new Color(0x000000),
-          emissiveIntensity: material.emissiveIntensity ?? 1,
+          color: material.color
+            ? material.color.clone()
+            : new Color(0xffffff),
         };
       }
-      material.emissive = new Color(0xffffff);
-      material.emissiveIntensity = 0.15;
+      material.color = new Color(0xffffff);
     };
 
     if (Array.isArray(object.material)) {
@@ -94,8 +92,7 @@ export default function Experience(props) {
     const restore = (material) => {
       const original = material.userData?.original;
       if (!original) return;
-      material.emissive = original.emissive.clone();
-      material.emissiveIntensity = original.emissiveIntensity;
+      material.color = original.color.clone();
     };
 
     if (Array.isArray(object.material)) {
@@ -131,40 +128,24 @@ export default function Experience(props) {
   };
 
   // Materials
-  const [brlColorMap, brlNormalMap, brlRoughnessMap] = useLoader(
+  const [brlNormalMap, brlRoughnessMap] = useLoader(
     TextureLoader,
     [
-      "/textures/Leather/Leather037_1K-JPG/Leather037_1K-JPG_Color.jpg",
       "/textures/Leather/Leather037_1K-JPG/Leather037_1K-JPG_NormalDX.jpg",
       "/textures/Leather/Leather037_1K-JPG/Leather037_1K-JPG_Roughness.jpg",
       "/textures/leather_red_02_coll2_1k.jpg",
     ],
   );
 
-  const [TexColorMap, TexNormalMap, TexRoughnessMap] = useLoader(
-    TextureLoader,
-    [
-      "/textures/textiles/rough_linen_1k.blend/rough_linen_diff_1k.jpg",
-      "/textures/textiles/rough_linen_1k.blend/rough_linen_nor_dx_1k.jpg",
-      "/textures/textiles/rough_linen_1k.blend/rough_linen_rough_1k.jpg",
-    ],
-  );
+  const [TexNormalMap, TexRoughnessMap] = useLoader(TextureLoader, [
+    "/textures/textiles/rough_linen_1k.blend/rough_linen_nor_dx_1k.jpg",
+    "/textures/textiles/rough_linen_1k.blend/rough_linen_rough_1k.jpg",
+  ]);
 
   const [LacesColorMap, LacesRoughnessMap] = useLoader(TextureLoader, [
     "/textures/textiles/Laces/dirty_carpet_diff_1k.jpg",
     "/textures/textiles/Laces/rough_linen_rough_1k.jpg",
   ]);
-
-  const leather = (
-    <meshStandardMaterial
-      // map={brlColorMap}
-      normalMap={brlNormalMap}
-      roughnessMap={brlRoughnessMap}
-      roughness={1}
-      color={"#ffffff"}
-      metalness={0}
-    />
-  );
 
   const renderShoe = (position, scale) => (
     <group
@@ -195,7 +176,7 @@ export default function Experience(props) {
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Sole001.geometry}
+        geometry={nodes.SoleMerged001.geometry}
         name="Sole001"
         onClick={(event) => {
           event.stopPropagation();
@@ -203,27 +184,6 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          // normalMap={brlNormalMap}
-          // roughnessMap={brlRoughnessMap}
-          // roughness={1}
-          color={props.soleColor}
-          metalness={0}
-        />
-      </mesh>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.BottomSole001.geometry}
-        name="BottomSole001"
-        onClick={(event) => {
-          event.stopPropagation();
-          props.onMeshClick(meshToIndex[event.object.name]);
-        }}
-      >
-        <meshStandardMaterial
-          normalMap={brlNormalMap}
-          roughnessMap={brlRoughnessMap}
-          roughness={1}
           color={props.soleColor}
           metalness={0}
         />
@@ -279,7 +239,7 @@ export default function Experience(props) {
       >
         <meshStandardMaterial
           normalMap={brlNormalMap}
-          roughnessMap={brlRoughnessMap}
+          roughnessMap={brlNormalMap}
           roughness={1}
           color={props.interiorColor}
           metalness={0}
@@ -298,7 +258,7 @@ export default function Experience(props) {
       >
         <meshStandardMaterial
           normalMap={brlNormalMap}
-          roughnessMap={brlRoughnessMap}
+          roughnessMap={brlNormalMap}
           roughness={1}
           color={props.tipEyestayTongueColor}
           metalness={0}
@@ -393,10 +353,9 @@ export default function Experience(props) {
       >
         <meshStandardMaterial
           normalMap={brlNormalMap}
-          roughnessMap={brlRoughnessMap}
+          roughnessMap={brlNormalMap}
           roughness={1}
           color={props.mainColor}
-          metalness={0}
         />
       </mesh>
       <mesh
@@ -456,7 +415,7 @@ export default function Experience(props) {
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.NikeTongueTab.geometry}
+        geometry={nodes.NikeTongueTab001.geometry}
         name="NikeTongueTab"
         onClick={(event) => {
           event.stopPropagation();
@@ -510,8 +469,8 @@ export default function Experience(props) {
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.AirTongueTab.geometry}
-        name="AirTongueTab"
+        geometry={nodes.AirTongueTab001.geometry}
+        name="AirTongueTab001"
         onClick={(event) => {
           event.stopPropagation();
           props.onMeshClick(meshToIndex[event.object.name]);
@@ -573,7 +532,7 @@ export default function Experience(props) {
       >
         <meshStandardMaterial
           color={props.laceColor}
-          normalMap={LacesColorMap}
+          // normalMap={LacesColorMap}
           roughnessMap={LacesRoughnessMap}
           roughness={1}
           metalness={0}
@@ -665,7 +624,7 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          color={props.laceColor}
+          color={props.tipEyestayTongueColor}
           normalMap={TexNormalMap}
           roughnessMap={TexRoughnessMap}
           roughness={1}
@@ -683,7 +642,7 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          color={props.laceColor}
+          color={props.interiorColor}
           normalMap={TexNormalMap}
           roughnessMap={TexRoughnessMap}
           roughness={1}
@@ -701,7 +660,7 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          color={props.laceColor}
+          color={props.interiorColor}
           normalMap={TexNormalMap}
           roughnessMap={TexRoughnessMap}
           roughness={1}
@@ -719,7 +678,7 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          color={props.laceColor}
+          color={props.soleColor}
           normalMap={TexNormalMap}
           roughnessMap={TexRoughnessMap}
           roughness={1}
@@ -737,7 +696,7 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          color={props.laceColor}
+          color={props.swooshColor}
           normalMap={TexNormalMap}
           roughnessMap={TexRoughnessMap}
           roughness={1}
@@ -755,7 +714,7 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          color={props.laceColor}
+          color={props.tipEyestayTongueColor}
           normalMap={TexNormalMap}
           roughnessMap={TexRoughnessMap}
           roughness={1}
@@ -773,7 +732,7 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          color={props.laceColor}
+          color={props.tipEyestayTongueColor}
           normalMap={TexNormalMap}
           roughnessMap={TexRoughnessMap}
           roughness={1}
@@ -791,7 +750,7 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          color={props.laceColor}
+          color={props.tipEyestayTongueColor}
           normalMap={TexNormalMap}
           roughnessMap={TexRoughnessMap}
           roughness={1}
@@ -809,7 +768,7 @@ export default function Experience(props) {
         }}
       >
         <meshStandardMaterial
-          color={props.laceColor}
+          color={props.tipEyestayTongueColor}
           normalMap={TexNormalMap}
           roughnessMap={TexRoughnessMap}
           roughness={1}
@@ -821,7 +780,7 @@ export default function Experience(props) {
 
   return (
     <>
-      <color args={["#e7ecf0"]} attach="background" />
+      <color args={["#f8f8f8"]} attach="background" />
       <OrbitControls
         makeDefault
         autoRotateSpeed={-0.1}
@@ -834,18 +793,18 @@ export default function Experience(props) {
         maxPolarAngle={Math.PI}
       />
       {/* Lights */}
-      <ambientLight intensity={1} />
+      <ambientLight intensity={0.5} />
       <directionalLight
         position={[2, 5, 0.5]}
-        intensity={1}
+        intensity={0.5}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
-      <directionalLight position={[3, 15, -30]} intensity={1} />
-      <directionalLight position={[2, 50, 30]} intensity={1} />
-      <directionalLight position={[40, 8, 3]} intensity={0.5} />
-      <directionalLight position={[1, 50, 3]} intensity={0.5} />
+      <directionalLight position={[6, 15, -30]} intensity={1.2} />
+      <directionalLight position={[6, 50, 30]} intensity={0.5} />
+      <directionalLight position={[40, 8, 3]} intensity={1.2} />
+      <directionalLight position={[1, 50, 3]} intensity={0.6} />
 
       {/* Geometries */}
       <Center>
@@ -861,10 +820,10 @@ export default function Experience(props) {
             color="hsla(0, 0%, 51%, 1)"
           />
         </Plane>
-        {renderShoe([0, 0.2, 0], [1,1,1])}
+        {renderShoe([0, 0.2, 0], [1, 1, 1])}
         {renderShoe([0, 0.2, 1.8], [1, 1, -1])}
 
-        {/* <Environment preset="studio" /> */}
+        <Environment preset="city" environmentIntensity={0.1}/>
       </Center>
     </>
   );

@@ -22,14 +22,13 @@ const root = ReactDOM.createRoot(document.querySelector("#root"));
 function App() {
   const [mainColor, setMainColor] = useState("#ffffff");
   const [tipEyestayTongueColor, setTipEyestayTongueColor] = useState("#ece9e9");
-  const [interiorColor, setInteriorColor] = useState("#6881c5");
+  const [interiorColor, setInteriorColor] = useState("#ffffff");
   const [swooshColor, setSwooshColor] = useState("#6881c5");
-  // This will hold a logo choice identifier (e.g. 'logo-1', 'logo-2')
-  const [tongueLabelColor, setTongueLabelColor] = useState("logo-1");
-  const [laceColor, setLaceColor] = useState("#6881c5");
-  const [backTabColor, setBackTabColor] = useState("#6881c5");
+  const [tongueLabelColor, setTongueLabelColor] = useState("#292929");
+  const [laceColor, setLaceColor] = useState("#000000");
+  const [backTabColor, setBackTabColor] = useState("#ffffff");
   // soleColor limited to 'white' or 'gum'
-  const [soleColor, setSoleColor] = useState("#ece9e9");
+  const [soleColor, setSoleColor] = useState("#f7c68e");
 
   const [builderIndex, setBuilderIndex] = useState(0);
 
@@ -65,11 +64,9 @@ function App() {
       title: "Sole",
       value: soleColor,
       onChange: setSoleColor,
-      colors: ["#ece9e9", "#a05f21"],
+      colors: ["#ece9e9", "#f7c68e"],
     },
   ];
-
-  console.log(builders[builderIndex]);
 
   return (
     <>
@@ -80,7 +77,7 @@ function App() {
           camera={{
             fov: 26,
             near: 0.01,
-            position: [-5, 3, -10],
+            position: [-6, 2, -10],
           }}
         >
           <Suspense>
@@ -171,6 +168,7 @@ function App() {
                 title={builders[builderIndex].title}
                 value={builders[builderIndex].value}
                 onChange={builders[builderIndex].onChange}
+                colors={builders[builderIndex].colors}
               />
 
               <ArrowForwardIosIcon
