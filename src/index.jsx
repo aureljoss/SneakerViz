@@ -19,6 +19,15 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
+function Loading() {
+  return (
+    <div className="loading-screen">
+      <div className="loading-text">Loading...</div>
+      <div className="spinner"></div>
+    </div>
+  );
+}
+
 function App() {
   const [mainColor, setMainColor] = useState("#ffffff");
   const [tipEyestayTongueColor, setTipEyestayTongueColor] = useState("#ece9e9");
@@ -57,6 +66,7 @@ function App() {
       title: "Tongue Label",
       value: tongueLabelColor,
       onChange: setTongueLabelColor,
+      colors: ["#ece9e9", "#000000"],
     },
     { title: "Laces", value: laceColor, onChange: setLaceColor },
     { title: "Back Tab", value: backTabColor, onChange: setBackTabColor },
@@ -70,17 +80,17 @@ function App() {
 
   return (
     <>
-      <div id="canvas-container">
-        <Canvas
-          flat
-          shadows
-          camera={{
-            fov: 26,
-            near: 0.01,
-            position: [-6, 2, -10],
-          }}
-        >
-          <Suspense>
+      <Suspense fallback={<Loading />}>
+        <div id="canvas-container">
+          <Canvas
+            flat
+            shadows
+            camera={{
+              fov: 26,
+              near: 0.01,
+              position: [-6, 2, -10],
+            }}
+          >
             <Experience
               mainColor={mainColor}
               tipEyestayTongueColor={tipEyestayTongueColor}
@@ -92,10 +102,9 @@ function App() {
               soleColor={soleColor}
               onMeshClick={handleMeshClick}
             />
-            {/* UI */}
-          </Suspense>
-        </Canvas>
-      </div>
+          </Canvas>
+        </div>
+      </Suspense>
 
       <div id="ui-container">
         <Container maxWidth="xs" id="simple-container">

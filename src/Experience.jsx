@@ -5,7 +5,7 @@ import {
   Environment,
   Plane,
 } from "@react-three/drei";
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { DoubleSide, Color } from "three";
 import { useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
@@ -14,6 +14,9 @@ import { TextureLoader } from "three";
 
 export default function Experience(props) {
   const { nodes } = useGLTF("/models/sneaker.glb");
+
+  const leftShoeRef = useRef();
+  const rightShoeRef = useRef();
 
   const meshToIndex = {
     MainBody001: 0, // Vamp / Quarter
@@ -51,6 +54,17 @@ export default function Experience(props) {
     Air001: 7,
   };
 
+  const colorProps = [
+    props.mainColor,
+    props.tipEyestayTongueColor,
+    props.interiorColor,
+    props.swooshColor,
+    props.tongueLabelColor,
+    props.laceColor,
+    props.backTabColor,
+    props.soleColor,
+  ];
+
   const setCursor = (cursor) => {
     if (typeof document !== "undefined") {
       document.body.style.cursor = cursor;
@@ -66,17 +80,26 @@ export default function Experience(props) {
     return object;
   };
 
+  const findCounterpartMesh = (mesh) => {
+    const currentGroup = mesh.parent;
+    const otherGroup =
+      currentGroup === leftShoeRef.current
+        ? rightShoeRef.current
+        : leftShoeRef.current;
+    if (!otherGroup) return null;
+    return otherGroup.children.find(
+      (child) => child.name === mesh.name && child.isMesh,
+    );
+  };
+
   const highlightMesh = (object) => {
     if (!object?.material) return;
     const setHighlight = (material) => {
       if (!material.userData) material.userData = {};
-      if (!material.userData.original) {
-        material.userData.original = {
-          color: material.color
-            ? material.color.clone()
-            : new Color(0xffffff),
-        };
-      }
+      // Always store the current color as original before highlighting
+      material.userData.original = {
+        color: material.color ? material.color.clone() : new Color(0xffffff),
+      };
       material.color = new Color(0xffffff);
     };
 
@@ -90,9 +113,16 @@ export default function Experience(props) {
   const unhighlightMesh = (object) => {
     if (!object?.material) return;
     const restore = (material) => {
-      const original = material.userData?.original;
-      if (!original) return;
-      material.color = original.color.clone();
+      const index = meshToIndex[object.name];
+      if (index !== undefined) {
+        // For meshes with props, set to current prop color
+        material.color = new Color(colorProps[index]);
+      } else {
+        // For other meshes, restore from original
+        const original = material.userData?.original;
+        if (!original) return;
+        material.color = original.color.clone();
+      }
     };
 
     if (Array.isArray(object.material)) {
@@ -110,8 +140,12 @@ export default function Experience(props) {
     setCursor("pointer");
     if (hoveredRef.current && hoveredRef.current !== mesh) {
       unhighlightMesh(hoveredRef.current);
+      const counterpart = findCounterpartMesh(hoveredRef.current);
+      if (counterpart) unhighlightMesh(counterpart);
     }
     highlightMesh(mesh);
+    const counterpart = findCounterpartMesh(mesh);
+    if (counterpart) highlightMesh(counterpart);
     hoveredRef.current = mesh;
   };
 
@@ -122,20 +156,18 @@ export default function Experience(props) {
 
     if (hoveredRef.current === mesh) {
       unhighlightMesh(mesh);
+      const counterpart = findCounterpartMesh(mesh);
+      if (counterpart) unhighlightMesh(counterpart);
       hoveredRef.current = null;
     }
     setCursor("auto");
   };
 
   // Materials
-  const [brlNormalMap, brlRoughnessMap] = useLoader(
-    TextureLoader,
-    [
-      "/textures/Leather/Leather037_1K-JPG/Leather037_1K-JPG_NormalDX.jpg",
-      "/textures/Leather/Leather037_1K-JPG/Leather037_1K-JPG_Roughness.jpg",
-      "/textures/leather_red_02_coll2_1k.jpg",
-    ],
-  );
+  const [brlNormalMap, brlRoughnessMap] = useLoader(TextureLoader, [
+    "/textures/Leather/Leather037_1K-JPG/Leather037_1K-JPG_NormalDX.jpg",
+    "/textures/Leather/Leather037_1K-JPG/Leather037_1K-JPG_Roughness.jpg",
+  ]);
 
   const [TexNormalMap, TexRoughnessMap] = useLoader(TextureLoader, [
     "/textures/textiles/rough_linen_1k.blend/rough_linen_nor_dx_1k.jpg",
@@ -147,8 +179,9 @@ export default function Experience(props) {
     "/textures/textiles/Laces/rough_linen_rough_1k.jpg",
   ]);
 
-  const renderShoe = (position, scale) => (
+  const renderShoe = (position, scale, ref) => (
     <group
+      ref={ref}
       rotation={[0, 0, Math.PI / 14]}
       position={position}
       scale={scale}
@@ -183,10 +216,7 @@ export default function Experience(props) {
           props.onMeshClick(meshToIndex[event.object.name]);
         }}
       >
-        <meshStandardMaterial
-          color={props.soleColor}
-          metalness={0}
-        />
+        <meshStandardMaterial color={props.soleColor} metalness={0} />
       </mesh>
 
       <mesh
@@ -249,7 +279,7 @@ export default function Experience(props) {
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.Tip001.geometry}
+        geometry={nodes.Tip004.geometry}
         name="Tip001"
         onClick={(event) => {
           event.stopPropagation();
@@ -820,10 +850,10 @@ export default function Experience(props) {
             color="hsla(0, 0%, 51%, 1)"
           />
         </Plane>
-        {renderShoe([0, 0.2, 0], [1, 1, 1])}
-        {renderShoe([0, 0.2, 1.8], [1, 1, -1])}
+        {renderShoe([0, 0.2, 0], [1, 1, 1], leftShoeRef)}
+        {renderShoe([0, 0.2, 1.8], [1, 1, -1], rightShoeRef)}
 
-        <Environment preset="city" environmentIntensity={0.1}/>
+        <Environment preset="city" environmentIntensity={0.1} />
       </Center>
     </>
   );
