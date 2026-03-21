@@ -2,8 +2,7 @@ import "./styles/styles.css";
 import ReactDOM from "react-dom/client";
 import { Canvas } from "@react-three/fiber";
 import Experience from "./Experience.jsx";
-import * as THREE from "three";
-import React, { Suspense, useState, useEffect } from "react";
+import React, { useState } from "react";
 import ShoeBuilder from "./components/ShoeBuilder.jsx";
 
 import "@fontsource/roboto/300.css";
@@ -19,22 +18,13 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
-function Loading() {
-  return (
-    <div className="loading-screen">
-      <div className="loading-text">Loading...</div>
-      <div className="spinner"></div>
-    </div>
-  );
-}
-
 function App() {
-  const [mainColor, setMainColor] = useState("#ffffff");
-  const [tipEyestayTongueColor, setTipEyestayTongueColor] = useState("#ece9e9");
-  const [interiorColor, setInteriorColor] = useState("#ffffff");
-  const [swooshColor, setSwooshColor] = useState("#6881c5");
+  const [mainColor, setMainColor] = useState("#445742");
+  const [tipEyestayTongueColor, setTipEyestayTongueColor] = useState("#292929");
+  const [interiorColor, setInteriorColor] = useState("#292929");
+  const [swooshColor, setSwooshColor] = useState("#ece9e9");
   const [tongueLabelColor, setTongueLabelColor] = useState("#292929");
-  const [laceColor, setLaceColor] = useState("#000000");
+  const [laceColor, setLaceColor] = useState("#292929");
   const [backTabColor, setBackTabColor] = useState("#ffffff");
   // soleColor limited to 'white' or 'gum'
   const [soleColor, setSoleColor] = useState("#f7c68e");
@@ -80,33 +70,31 @@ function App() {
 
   return (
     <>
-      <Suspense fallback={<Loading />}>
-        <div id="canvas-container">
-          <Canvas
-            flat
-            shadows
-            camera={{
-              fov: 26,
-              near: 0.01,
-              position: [-6, 2, -10],
-            }}
-          >
-            <Experience
-              mainColor={mainColor}
-              tipEyestayTongueColor={tipEyestayTongueColor}
-              interiorColor={interiorColor}
-              swooshColor={swooshColor}
-              tongueLabelColor={tongueLabelColor}
-              laceColor={laceColor}
-              backTabColor={backTabColor}
-              soleColor={soleColor}
-              onMeshClick={handleMeshClick}
-            />
-          </Canvas>
-        </div>
-      </Suspense>
+      <div id="canvas-container">
+        <Canvas
+          flat
+          shadows
+          camera={{
+            fov: 26,
+            near: 0.01,
+            position: [-5, 2, -10],
+          }}
+        >
+          <Experience
+            mainColor={mainColor}
+            tipEyestayTongueColor={tipEyestayTongueColor}
+            interiorColor={interiorColor}
+            swooshColor={swooshColor}
+            tongueLabelColor={tongueLabelColor}
+            laceColor={laceColor}
+            backTabColor={backTabColor}
+            soleColor={soleColor}
+            onMeshClick={handleMeshClick}
+          />
+        </Canvas>
+      </div>
 
-      <div id="ui-container">
+      <div id="ui-details-container">
         <Container maxWidth="xs" id="simple-container">
           <Box
             sx={{
@@ -152,6 +140,9 @@ function App() {
               Nike Members. Learn more. Return policy exclusions apply.
             </p>
           </Box>
+        </Container>
+
+        <Container maxWidth="lg" id="main-container">
           <Box
             sx={{
               bgcolor: "rgba(255, 255, 255, 0.4)",

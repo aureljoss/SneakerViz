@@ -8,9 +8,16 @@ const DEFAULT_COLORS = [
   "#cb8bdf",
   "#6881c5",
   "#cc1d51",
+  "#a2bb9e",
+  "#445742",
 ];
 
-export default function ShoeBuilder({ title, value, onChange, colors = DEFAULT_COLORS }) {
+export default function ShoeBuilder({
+  title,
+  value,
+  onChange,
+  colors = DEFAULT_COLORS,
+}) {
   return (
     <div id="builder-container">
       <h1>{title}</h1>

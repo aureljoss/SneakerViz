@@ -32,6 +32,7 @@ export default function Experience(props) {
     Foxing001: 2, // Foxing / Lining
     Cushion001_swoosh: 2, // Swoosh
     Cushion001_interior: 2, // Foxing / Lining
+    SoleInside001: 2, // Foxing / Lining
     Sole001: 7, // Sole
     BottomSole001: 7, // Sole
     BackTab001: 6, // Back Tab
@@ -222,6 +223,19 @@ export default function Experience(props) {
       <mesh
         castShadow
         receiveShadow
+        geometry={nodes.SoleInside001.geometry}
+        name="SoleInside001"
+        onClick={(event) => {
+          event.stopPropagation();
+          props.onMeshClick(meshToIndex[event.object.name]);
+        }}
+      >
+        <meshStandardMaterial color={props.interiorColor} metalness={0} />
+      </mesh>
+
+      <mesh
+        castShadow
+        receiveShadow
         geometry={nodes.BackTab001.geometry}
         name="BackTab001"
         onClick={(event) => {
@@ -307,7 +321,7 @@ export default function Experience(props) {
       >
         <meshStandardMaterial
           normalMap={brlNormalMap}
-          roughnessMap={brlRoughnessMap}
+          roughnessMap={brlNormalMap}
           roughness={1}
           color={props.tipEyestayTongueColor}
           metalness={0}
@@ -326,7 +340,7 @@ export default function Experience(props) {
       >
         <meshStandardMaterial
           normalMap={brlNormalMap}
-          roughnessMap={brlRoughnessMap}
+          roughnessMap={brlNormalMap}
           roughness={1}
           color={props.swooshColor}
           metalness={0}
@@ -345,7 +359,7 @@ export default function Experience(props) {
       >
         <meshStandardMaterial
           normalMap={brlNormalMap}
-          roughnessMap={brlRoughnessMap}
+          roughnessMap={brlNormalMap}
           roughness={1}
           color={props.swooshColor}
           metalness={0}
