@@ -5,7 +5,7 @@ import {
   Environment,
   Plane,
 } from "@react-three/drei";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { DoubleSide, Color } from "three";
 import { useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
@@ -55,17 +55,6 @@ export default function Experience(props) {
     Air001: 7,
   };
 
-  const colorProps = [
-    props.mainColor,
-    props.tipEyestayTongueColor,
-    props.interiorColor,
-    props.swooshColor,
-    props.tongueLabelColor,
-    props.laceColor,
-    props.backTabColor,
-    props.soleColor,
-  ];
-
   const setCursor = (cursor) => {
     if (typeof document !== "undefined") {
       document.body.style.cursor = cursor;
@@ -73,6 +62,30 @@ export default function Experience(props) {
   };
 
   const hoveredRef = useRef(null);
+  const cursorOverlayRef = useRef(null);
+
+  React.useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.pointerEvents = "none";
+    overlay.style.width = "26px";
+    overlay.style.height = "26px";
+    overlay.style.borderRadius = "50%";
+    overlay.style.border = "1px solid #ffffff";
+    overlay.style.transform = "translate(-50%, -100%)";
+    overlay.style.zIndex = "9999";
+    overlay.style.display = "none";
+    document.body.appendChild(overlay);
+
+    cursorOverlayRef.current = overlay;
+
+    return () => {
+      if (overlay.parentElement) overlay.parentElement.removeChild(overlay);
+      cursorOverlayRef.current = null;
+    };
+  }, []);
 
   const getMaterialObject = (object) => {
     while (object && !object.material) {
@@ -81,56 +94,42 @@ export default function Experience(props) {
     return object;
   };
 
-  const findCounterpartMesh = (mesh) => {
-    const currentGroup = mesh.parent;
-    const otherGroup =
-      currentGroup === leftShoeRef.current
-        ? rightShoeRef.current
-        : leftShoeRef.current;
-    if (!otherGroup) return null;
-    return otherGroup.children.find(
-      (child) => child.name === mesh.name && child.isMesh,
-    );
+  const getMeshColor = (object) => {
+    if (!object?.material) return "#ffffff";
+
+    const material = Array.isArray(object.material)
+      ? object.material[0]
+      : object.material;
+    if (material.color) {
+      return "#" + material.color.getHexString();
+    }
+    return "#ffffff";
   };
 
-  const highlightMesh = (object) => {
-    if (!object?.material) return;
-    const setHighlight = (material) => {
-      if (!material.userData) material.userData = {};
-      // Always store the current color as original before highlighting
-      material.userData.original = {
-        color: material.color ? material.color.clone() : new Color(0xffffff),
-      };
-      material.color = new Color(0xffffff);
-    };
-
-    if (Array.isArray(object.material)) {
-      object.material.forEach(setHighlight);
-    } else {
-      setHighlight(object.material);
-    }
+  const setOverlayColor = (color) => {
+    if (!cursorOverlayRef.current) return;
+    cursorOverlayRef.current.style.backgroundColor = color;
   };
 
-  const unhighlightMesh = (object) => {
-    if (!object?.material) return;
-    const restore = (material) => {
-      const index = meshToIndex[object.name];
-      if (index !== undefined) {
-        // For meshes with props, set to current prop color
-        material.color = new Color(colorProps[index]);
-      } else {
-        // For other meshes, restore from original
-        const original = material.userData?.original;
-        if (!original) return;
-        material.color = original.color.clone();
-      }
-    };
+  const moveOverlay = (x, y) => {
+    if (!cursorOverlayRef.current) return;
+    cursorOverlayRef.current.style.left = `${x}px`;
+    cursorOverlayRef.current.style.top = `${y}px`;
+  };
 
-    if (Array.isArray(object.material)) {
-      object.material.forEach(restore);
-    } else {
-      restore(object.material);
-    }
+  const showOverlay = () => {
+    if (!cursorOverlayRef.current) return;
+    cursorOverlayRef.current.style.display = "block";
+  };
+
+  const hideOverlay = () => {
+    if (!cursorOverlayRef.current) return;
+    cursorOverlayRef.current.style.display = "none";
+  };
+
+  const handlePointerMove = (event) => {
+    if (!cursorOverlayRef.current) return;
+    moveOverlay(event.clientX, event.clientY -4);
   };
 
   const handlePointerOver = (event) => {
@@ -138,15 +137,12 @@ export default function Experience(props) {
     const mesh = getMaterialObject(event.object);
     if (!mesh) return;
 
+    const meshColor = getMeshColor(mesh);
     setCursor("pointer");
-    if (hoveredRef.current && hoveredRef.current !== mesh) {
-      unhighlightMesh(hoveredRef.current);
-      const counterpart = findCounterpartMesh(hoveredRef.current);
-      if (counterpart) unhighlightMesh(counterpart);
-    }
-    highlightMesh(mesh);
-    const counterpart = findCounterpartMesh(mesh);
-    if (counterpart) highlightMesh(counterpart);
+    setOverlayColor(meshColor);
+    moveOverlay(event.clientX, event.clientY -4);
+    showOverlay();
+
     hoveredRef.current = mesh;
   };
 
@@ -156,12 +152,10 @@ export default function Experience(props) {
     if (!mesh) return;
 
     if (hoveredRef.current === mesh) {
-      unhighlightMesh(mesh);
-      const counterpart = findCounterpartMesh(mesh);
-      if (counterpart) unhighlightMesh(counterpart);
       hoveredRef.current = null;
     }
     setCursor("auto");
+    hideOverlay();
   };
 
   // Materials
@@ -188,6 +182,7 @@ export default function Experience(props) {
       scale={scale}
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
+      onPointerMove={handlePointerMove}
     >
       <mesh
         castShadow

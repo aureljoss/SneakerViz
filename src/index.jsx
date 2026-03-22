@@ -15,6 +15,8 @@ import Button from "@mui/material/Button";
 import Fab from "@mui/material/Fab";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
 
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
@@ -30,9 +32,14 @@ function App() {
   const [soleColor, setSoleColor] = useState("#f7c68e");
 
   const [builderIndex, setBuilderIndex] = useState(0);
+  const [isSimpleContainerOpen, setIsSimpleContainerOpen] = useState(true);
 
   const handleMeshClick = (index) => {
     setBuilderIndex(index);
+  };
+
+  const toggleSimpleContainer = () => {
+    setIsSimpleContainerOpen(!isSimpleContainerOpen);
   };
 
   const builders = [
@@ -95,52 +102,88 @@ function App() {
       </div>
 
       <div id="ui-details-container">
-        <Container maxWidth="xs" id="simple-container">
-          <Box
+        {isSimpleContainerOpen ? (
+          <div style={{ position: "relative" }}>
+            <Fab
+              size="small"
+              onClick={toggleSimpleContainer}
+              sx={{
+                position: "absolute",
+                top: -10,
+                right: -10,
+                zIndex: 10,
+                bgcolor: "rgba(255, 255, 255, 0.8)",
+                "&:hover": {
+                  bgcolor: "rgba(255, 255, 255, 0.9)",
+                },
+              }}
+            >
+              <CloseIcon />
+            </Fab>
+            <Container maxWidth="xs" id="simple-container">
+              <Box
+                sx={{
+                  bgcolor: "rgba(255, 255, 255, 0.4)",
+                  borderRadius: "15px",
+                  padding: "10px",
+                  backdropFilter: "blur(10px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "left",
+                  maxHeight: "80vh",
+                  marginBottom: "10px",
+                }}
+              >
+                <h1>Air Force 1 Low</h1>
+                <p>
+                  The b-ball icon that puts a fresh spin on what you know best:
+                  crisp leather, bold colors and the perfect amount of flash to make
+                  you shine. A subtle platform gives you just the right amount of
+                  height.
+                </p>
+                <p>
+                  <span className="stars">★ ★ ★ ★ ☆</span> 4.6
+                </p>
+              </Box>
+              <Box
+                sx={{
+                  bgcolor: "rgba(255, 255, 255, 0.4)",
+                  borderRadius: "15px",
+                  padding: "10px",
+                  backdropFilter: "blur(10px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "left",
+                  maxHeight: "80vh",
+                  marginBottom: "10px",
+                }}
+              >
+                <h1>Product Details</h1>
+                <p>Fits large; we recommend ordering a half size down</p>
+                <p>
+                  Free standard shipping on orders $50+ and free 60-day returns for
+                  Nike Members. Learn more. Return policy exclusions apply.
+                </p>
+              </Box>
+            </Container>
+          </div>
+        ) : (
+          <Fab
+            onClick={toggleSimpleContainer}
             sx={{
-              bgcolor: "rgba(255, 255, 255, 0.4)",
-              borderRadius: "15px",
-              padding: "10px",
-              backdropFilter: "blur(10px)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "left",
-              maxHeight: "80vh",
-              marginBottom: "10px",
+              position: "absolute",
+              top: "50%",
+              right: "20px",
+              transform: "translateY(-50%)",
+              bgcolor: "rgba(255, 255, 255, 0.8)",
+              "&:hover": {
+                bgcolor: "rgba(255, 255, 255, 0.9)",
+              },
             }}
           >
-            <h1>Air Force 1 Low</h1>
-            <p>
-              The b-ball icon that puts a fresh spin on what you know best:
-              crisp leather, bold colors and the perfect amount of flash to make
-              you shine. A subtle platform gives you just the right amount of
-              height.
-            </p>
-            <p>
-              <span className="stars">★ ★ ★ ★ ☆</span> 4.6
-            </p>
-          </Box>
-          <Box
-            sx={{
-              bgcolor: "rgba(255, 255, 255, 0.4)",
-              borderRadius: "15px",
-              padding: "10px",
-              backdropFilter: "blur(10px)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "left",
-              maxHeight: "80vh",
-              marginBottom: "10px",
-            }}
-          >
-            <h1>Product Details</h1>
-            <p>Fits large; we recommend ordering a half size down</p>
-            <p>
-              Free standard shipping on orders $50+ and free 60-day returns for
-              Nike Members. Learn more. Return policy exclusions apply.
-            </p>
-          </Box>
-        </Container>
+            <AddIcon />
+          </Fab>
+        )}
 
         <Container maxWidth="lg" id="main-container">
           <Box
