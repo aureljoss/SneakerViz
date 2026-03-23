@@ -28,7 +28,7 @@ export default function ShoeBuilder({
             size="small"
             sx={{
               backgroundColor: color,
-              margin: "10px",
+              margin: "6px",
               transform: "scale(0.9)",
               border: value === color ? "2px solid #353535" : null,
             }}

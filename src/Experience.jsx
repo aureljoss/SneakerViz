@@ -5,18 +5,64 @@ import {
   Environment,
   Plane,
 } from "@react-three/drei";
-import React, { useRef } from "react";
-import { DoubleSide, Color } from "three";
-import { useLoader } from "@react-three/fiber";
+import React, { useRef, useEffect } from "react";
+import { DoubleSide, Color, Vector3 } from "three";
+import { useLoader, useFrame } from "@react-three/fiber";
 import { TextureLoader } from "three";
 
 //Imported glb models
 
 export default function Experience(props) {
   const { nodes } = useGLTF("/models/sneaker.glb");
+  const controlsRef = useRef();
 
   const leftShoeRef = useRef();
   const rightShoeRef = useRef();
+
+  const targetPositionRef = useRef(new Vector3(-5, 2, -10));
+  const targetTargetRef = useRef(new Vector3(0, 0, 0));
+  const targetFovRef = useRef(26);
+  const isTransitioningRef = useRef(false);
+
+  // Update camera position when cameraPositionIndex changes (start transition)
+  useEffect(() => {
+    if (props.cameraPositions && props.cameraPositionIndex !== undefined) {
+      const currentPosition = props.cameraPositions[props.cameraPositionIndex];
+      if (currentPosition) {
+        targetPositionRef.current.copy(
+          new Vector3(...currentPosition.position),
+        );
+        targetTargetRef.current.copy(new Vector3(0, 0, 0));
+        targetFovRef.current = currentPosition.fov;
+        isTransitioningRef.current = true;
+      }
+    }
+  }, [props.cameraPositionIndex, props.cameraPositions]);
+
+  // Animate camera to target only during transition
+  useFrame((state, delta) => {
+    if (!controlsRef.current) return;
+
+    const camera = controlsRef.current.object;
+    const controls = controlsRef.current;
+
+    if (isTransitioningRef.current) {
+      camera.position.lerp(targetPositionRef.current, delta * 2);
+      controls.target.lerp(targetTargetRef.current, delta * 2);
+      camera.fov += (targetFovRef.current - camera.fov) * delta * 2;
+      camera.updateProjectionMatrix();
+
+      const posDist = camera.position.distanceTo(targetPositionRef.current);
+      const targetDist = controls.target.distanceTo(targetTargetRef.current);
+      const fovDist = Math.abs(camera.fov - targetFovRef.current);
+
+      if (posDist < 0.03 && targetDist < 0.03 && fovDist < 0.1) {
+        isTransitioningRef.current = false;
+      }
+    }
+
+    controls.update();
+  });
 
   const meshToIndex = {
     MainBody001: 0, // Vamp / Quarter
@@ -129,7 +175,7 @@ export default function Experience(props) {
 
   const handlePointerMove = (event) => {
     if (!cursorOverlayRef.current) return;
-    moveOverlay(event.clientX, event.clientY -4);
+    moveOverlay(event.clientX, event.clientY - 4);
   };
 
   const handlePointerOver = (event) => {
@@ -140,7 +186,7 @@ export default function Experience(props) {
     const meshColor = getMeshColor(mesh);
     setCursor("pointer");
     setOverlayColor(meshColor);
-    moveOverlay(event.clientX, event.clientY -4);
+    moveOverlay(event.clientX, event.clientY - 4);
     showOverlay();
 
     hoveredRef.current = mesh;
@@ -821,15 +867,18 @@ export default function Experience(props) {
     <>
       <color args={["#f8f8f8"]} attach="background" />
       <OrbitControls
+        ref={controlsRef}
         makeDefault
         autoRotateSpeed={-0.1}
         zoomSpeed={2}
         enableZoom={false}
-        // minDistance={10}
-        // maxDistance={14}
         dampingFactor={0.08}
         minPolarAngle={0}
         maxPolarAngle={Math.PI}
+        onStart={() => {
+          // User directly controls orbit; cancel any scripted transition
+          isTransitioningRef.current = false;
+        }}
       />
       {/* Lights */}
       <ambientLight intensity={0.5} />
@@ -859,8 +908,8 @@ export default function Experience(props) {
             color="hsla(0, 0%, 51%, 1)"
           />
         </Plane>
-        {renderShoe([0, 0.2, 0], [1, 1, 1], leftShoeRef)}
-        {renderShoe([0, 0.2, 1.8], [1, 1, -1], rightShoeRef)}
+        {renderShoe([0, 0.2, -0.8], [1, 1, 1], leftShoeRef)}
+        {renderShoe([0, 0.2, 0.8], [1, 1, -1], rightShoeRef)}
 
         <Environment preset="city" environmentIntensity={0.1} />
       </Center>

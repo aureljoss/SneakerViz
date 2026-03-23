@@ -21,6 +21,7 @@ h1 {
 }
 
 p {
+  font-size: 16px;
   margin: 0.5em 0em;}
 
 #root {
@@ -35,7 +36,7 @@ p {
 
 #canvas-container {
   position: absolute;
-  width: 100vw;
+  width: 70vw;
   height: 100vh;
   z-index: -1;
 }
@@ -50,7 +51,7 @@ p {
   position: absolute;
   z-index: 1;
   bottom: 6vh;
-  left: 50vw;
+  left: 35vw;
   transform: translateX(-50%)
 }
 
